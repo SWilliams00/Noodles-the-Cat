@@ -1,8 +1,15 @@
+/*Shelby Williams
+Advanced Java
+12-18-21
+Noodles the Cat Point-and-Click Adventure Game
+API for all imported libraries used as references.
+References for setting background image: https://stackoverflow.com/questions/9738146/javafx-how-to-set-scene-background-image
+ */
+
 package com.example.noodlesthecat;
 
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -13,7 +20,10 @@ public abstract class Room {
     Room right;
     protected List<String> commands;
     protected List<Clickable> clickables;
-    protected List<String> roomText;
+    protected List<String> enterRoomText;
+    protected List<String> yesText;
+    protected List<String> noText;
+
 
     public Room() throws FileNotFoundException {
 
@@ -21,10 +31,9 @@ public abstract class Room {
         setBackgroundImage();
         setClickables();
         setCommands();
-        getRoomText();
+        getEnterRoomText();
 
     }
-
 
     public BackgroundImage getBackgroundImage() {
         return backgroundImage;
@@ -57,8 +66,9 @@ public abstract class Room {
     protected abstract void setBackgroundImageLocation();
     protected abstract void setCommands();
     protected abstract void setClickables();
-    protected abstract List<String> getRoomText();
-
+    public abstract List<String> getEnterRoomText();
+    public abstract List<String> getYesText();
+    public abstract List<String> getNoText();
 
 
     private void setBackgroundImage() throws FileNotFoundException {
