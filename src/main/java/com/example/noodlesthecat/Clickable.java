@@ -1,18 +1,18 @@
 package com.example.noodlesthecat;
 
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Clickable {
+public class Clickable {
 
     protected Coordinates topLeft;
     protected int width;
     protected int height;
     protected Image image;
-
-    abstract public void actionPerformed();
 
     public List<String> itemText(){
 
@@ -79,4 +79,40 @@ public abstract class Clickable {
 
     }
 
+    public Coordinates getTopLeft() {
+        return topLeft;
+    }
+
+    public void setTopLeft(Coordinates topLeft) {
+        this.topLeft = topLeft;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public EventHandler getClickEvent() {
+        return (EventHandler<MouseEvent>) mouseEvent -> {
+        };
+    }
 }

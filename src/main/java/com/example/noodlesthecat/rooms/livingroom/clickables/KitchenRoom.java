@@ -8,14 +8,20 @@ Background image: https://www.reddit.com/r/PixelArt/comments/88l1t2/occc_living_
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
+import com.example.noodlesthecat.Clickable;
+import com.example.noodlesthecat.Coordinates;
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
+import javafx.scene.image.Image;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class KitchenRoom extends Room {
 
-    public KitchenRoom() throws FileNotFoundException{
+    public KitchenRoom(NoodlesGUI scene) throws FileNotFoundException{
+        super(scene);
     }
 
     @Override
@@ -30,7 +36,12 @@ public class KitchenRoom extends Room {
 
     @Override
     protected void setClickables(){
-        this.clickables = new ArrayList<>(){};
+        Clickable clickableToAdd = new Clickable();
+        clickableToAdd.setImage(new Image("/ItemFoil.png"));
+        clickableToAdd.setWidth(80);
+        clickableToAdd.setHeight(40);
+        clickableToAdd.setTopLeft(new Coordinates(550, 200));
+        clickables.add(clickableToAdd);
     }
 
     @Override
@@ -59,10 +70,6 @@ public class KitchenRoom extends Room {
         return roomText;
     }
 
-    public List<String> getYesText(){
-        return null;
-    }
-    public List<String> getNoText(){
-        return null;
-    }
+    public void onYPress(){}
+    public void onNPress(){}
 }

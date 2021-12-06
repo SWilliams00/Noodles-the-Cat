@@ -8,32 +8,39 @@ Background image: https://www.reddit.com/r/PixelArt/comments/7ueb5j/occcpark_ben
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
+import javafx.scene.Scene;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParkRoom extends Room{
-    public ParkRoom() throws FileNotFoundException {
+public class ParkRoom extends Room {
+
+    public ParkRoom(NoodlesGUI scene) throws FileNotFoundException {
+        super(scene);
     }
 
     @Override
-    protected void setBackgroundImageLocation(){
+    protected void setBackgroundImageLocation() {
         this.backgroundImageLocation = "/BGPark.png";
     }
 
     @Override
-    protected void setCommands(){
-        this.commands = new ArrayList<>(){};
+    protected void setCommands() {
+        this.commands = new ArrayList<>() {
+        };
     }
 
     @Override
-    protected void setClickables(){
-        this.clickables = new ArrayList<>(){};
+    protected void setClickables() {
+        this.clickables = new ArrayList<>() {
+        };
     }
 
     @Override
-    public List<String> getEnterRoomText(){
+    public List<String> getEnterRoomText() {
         List<String> roomText = new ArrayList<>();
         roomText.add("Ronto the Blue Bird: Where is it? Where did I drop it??");
         roomText.add("Ronto the Blue Bird: Oh, I don't see it anywhere!");
@@ -49,7 +56,7 @@ public class ParkRoom extends Room{
         return roomText;
     }
 
-    public List<String> getYesText(){
+    public void onYPress() {
         List<String> yesText = new ArrayList<>();
 
         yesText.add("Noodles: I found a feather yesterday! Is this yours?");
@@ -62,9 +69,10 @@ public class ParkRoom extends Room{
         yesText.add("Ronto the Blue Bird: Thanks for giving this one back! You're a real friend!");
         yesText.add("Ronto the Blue Bird: I found another feather while I was looking for mine. You should take it!");
         yesText.add("Ronto the Blue Bird: Maybe you'll find the bird this belongs to.");
-        return yesText;
+        scene.startDisplayTextThread(yesText);
     }
-    public List<String> getNoText(){
+
+    public void onNPress() {
         List<String> noText = new ArrayList<>();
 
         noText.add("Noodles: I'm sorry you lost your feather!");
@@ -73,6 +81,6 @@ public class ParkRoom extends Room{
         noText.add("Ronto the Blue Bird: Maybe another bird found it and used it to make a beautiful nest..");
         noText.add("Ronto the Blue Bird: But if you do find it, will you bring it to me?");
         noText.add("Noodles: Sure thing, Ronto! Good luck!");
-        return noText;
+        scene.startDisplayTextThread(noText);
     }
 }

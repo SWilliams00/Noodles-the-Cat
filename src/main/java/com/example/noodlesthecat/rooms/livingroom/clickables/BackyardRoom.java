@@ -8,13 +8,15 @@ Background image: https://www.reddit.com/r/PixelArt/comments/g0tqpj/berlin_backy
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BackyardRoom extends Room {
-    public BackyardRoom() throws FileNotFoundException {
+    public BackyardRoom(NoodlesGUI scene) throws FileNotFoundException {
+        super(scene);
     }
 
     @Override
@@ -23,18 +25,10 @@ public class BackyardRoom extends Room {
     }
 
     @Override
-    protected void setCommands() {
-        this.commands = new ArrayList<>() {
-
-        };
-    }
+    protected void setCommands() {this.commands = new ArrayList<>() {};}
 
     @Override
-    protected void setClickables() {
-        this.clickables = new ArrayList<>() {
-
-        };
-    }
+    protected void setClickables() {this.clickables = new ArrayList<>() { }; }
 
     @Override
     public List<String> getEnterRoomText(){
@@ -52,12 +46,14 @@ public class BackyardRoom extends Room {
         return roomText;
     }
 
-    public List<String> getYesText(){
-        return null;
+    public void onYPress(){
+        MGGuessTheNumber minigame = new MGGuessTheNumber();
+        minigame.display();
     }
-    public List<String> getNoText(){
-        List<String> noText = new ArrayList<>();
 
+    public void onNPress(){
+
+        List<String> noText = new ArrayList<>();
         noText.add("Noodles: I wish I could, Hank, but this quest is dangerous, perilous,");
         noText.add("Noodles: and of the utmost importance that it be completed before dark!");
         noText.add("Noodles: I must stay resolved in my endeavor to catch a salmon for dinner!");
@@ -68,7 +64,6 @@ public class BackyardRoom extends Room {
         noText.add("Hank the Black Cat: Okay! Nevermind. Well, good luck, my friend!");
         noText.add("Hank the Black Cat: May your belly be full with the bounties of the ocean!");
         noText.add("Noodles: Thanks, Hank!");
-
-        return noText;
+        scene.startDisplayTextThread(noText);
     }
 }

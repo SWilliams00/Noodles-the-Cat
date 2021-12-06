@@ -15,6 +15,7 @@ import com.example.noodlesthecat.rooms.livingroom.clickables.*;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -30,6 +31,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 
 public class NoodlesGUI extends Application {
@@ -38,13 +40,17 @@ public class NoodlesGUI extends Application {
     protected Label gameText;
     private Button leftArrow;
     private Button rightArrow;
-    private StackPane centerPanel;
+    private Pane centerPanel;
     private Room currentRoom;
     private Room roomToGoTo;
+    Scene gameScene;
     private BorderPane root;
     private Room livingRoom, kitchen, backyard, park;
     private Room town, woods, beach, cave;
-    ImageView view;
+    private Button buttonToAdd;
+
+    private static final int LONG_TEXT_DISPLAY_TIME = 10;
+    private static final int SHORT_TEXT_DISPLAY_TIME = 5;
 
     public EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
         @Override
@@ -52,12 +58,12 @@ public class NoodlesGUI extends Application {
         }
     };
 
-    public void keyPressed(KeyCode keyCode){
-        if(keyCode == KeyCode.Y){
-            currentRoom.getYesText();
+    public void keyPressed(KeyCode keyCode) {
+        if (keyCode.equals(KeyCode.Y)) {
+            currentRoom.onYPress();
         }
-        if(keyCode == KeyCode.N){
-            currentRoom.getNoText();
+        if (keyCode.equals(KeyCode.N)) {
+            currentRoom.onNPress();
         }
     }
 
@@ -68,10 +74,13 @@ public class NoodlesGUI extends Application {
         } catch (FileNotFoundException e) {
             System.out.println("Error loading rooms from images");
         }
-        BorderPane root = buildGameScene();
+
+        root = buildGameScene();
         firstStage.setTitle("Noodles!");
-        Scene scene = new Scene(root, 1000, 900);
-        firstStage.setScene(scene);
+        gameScene = new Scene(root, 1000, 900);
+
+        firstStage.setScene(gameScene);
+        changeRoom(currentRoom);
         firstStage.show();
     }
 
@@ -83,7 +92,6 @@ public class NoodlesGUI extends Application {
         addItemsBar();
         addLabels();
 
-        changeRoom(currentRoom);
         return root;
     }
 
@@ -94,14 +102,14 @@ public class NoodlesGUI extends Application {
     //Initializes room objects and assigns left/right positions. Sets starting room as Living Room
     private void loadRooms() throws FileNotFoundException {
 
-        livingRoom = new LivingRoom();
-        kitchen = new KitchenRoom();
-        backyard = new BackyardRoom();
-        park = new ParkRoom();
-        town = new TownRoom();
-        woods = new WoodsRoom();
-        beach = new BeachRoom();
-        cave = new CaveRoom();
+        livingRoom = new LivingRoom(this);
+        kitchen = new KitchenRoom(this);
+        backyard = new BackyardRoom(this);
+        park = new ParkRoom(this);
+        town = new TownRoom(this);
+        woods = new WoodsRoom(this);
+        beach = new BeachRoom(this);
+        cave = new CaveRoom(this);
 
         livingRoom.setLeft(backyard);
         livingRoom.setRight(kitchen);
@@ -125,7 +133,7 @@ public class NoodlesGUI extends Application {
 
     //Builds center panel of the root border pane. Sets background image based off of current room
     private void addCenter(Room currentRoom) {
-        centerPanel = new StackPane();
+        centerPanel = new Pane();
         Background background = new Background(currentRoom.getBackgroundImage());
         centerPanel.setBackground(background);
         centerPanel.setPrefHeight(600);
@@ -137,7 +145,7 @@ public class NoodlesGUI extends Application {
         Clicking the arrows navigates to the next room based on current room's left/right assignments.*/
     private void addButtons() {
         Image leftButton = new Image("/leftArrow.png");
-        view = new ImageView(leftButton);
+        ImageView view = new ImageView(leftButton);
         StackPane leftSide = new StackPane();
         leftSide.setPrefWidth(100);
         leftSide.setPrefHeight(600);
@@ -146,7 +154,7 @@ public class NoodlesGUI extends Application {
         leftArrow.setGraphic(view);
         leftSide.getChildren().add(leftArrow);
         root.setLeft(leftSide);
-        leftArrow.setOnAction((x) -> changeRoom(currentRoom.getLeft()));
+        leftArrow.addEventHandler(MouseEvent.MOUSE_CLICKED, (x) -> changeRoom(currentRoom.getLeft()));
 
         Image rightButton = new Image("/rightArrow.png");
         view = new ImageView(rightButton);
@@ -158,7 +166,7 @@ public class NoodlesGUI extends Application {
         rightArrow.setGraphic(view);
         rightSide.getChildren().add(rightArrow);
         root.setRight(rightSide);
-        rightArrow.setOnAction((x) -> changeRoom(currentRoom.getRight()));
+        rightArrow.addEventHandler(MouseEvent.MOUSE_CLICKED, (x) -> changeRoom(currentRoom.getRight()));
     }
 
     //Creates top panel for root border pane. Items collected in game will display here.
@@ -204,25 +212,60 @@ public class NoodlesGUI extends Application {
         centerPanel.setBackground(background);
         this.currentRoom = roomToGoTo;
 
-        gameText.setOnKeyPressed((x) -> {keyPressed(KeyCode.Y);});
-        gameText.setOnKeyPressed((x) -> {keyPressed(KeyCode.N);});
+        getClickablesAsButtons(centerPanel, roomToGoTo.getClickables());
+        startDisplayTextThread(roomToGoTo.getEnterRoomText());
+    }
 
-        /*Task created to manage text output thread. This allows the room to load and display first, then run the
-        room's text for the user to read. Output is set on a timer that varies based on the length of each line.*/
+    public void startDisplayTextThread(List<String> stringsToDisplay) {
+        //Task created to manage text output thread. This allows the room to load and display first, then run the
+        //room's text for the user to read. Output is set on a timer that varies based on the length of each line.
+        gameScene.setOnKeyPressed(null);
         Task task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                for(String text : roomToGoTo.getEnterRoomText()) {
-                    updateMessage(text);
-                    if(text.length() > 35){
-                        Thread.sleep(4000);
+                for (String text : stringsToDisplay) {
+                    if (text.equals(stringsToDisplay.get(0))) {
+                        updateMessage(text);
                     }
-                   else Thread.sleep(2000);
+                    else {
+                        if (text.length() > 35) {
+                            Thread.sleep(LONG_TEXT_DISPLAY_TIME);
+                        } else Thread.sleep(SHORT_TEXT_DISPLAY_TIME);
+                        updateMessage(text);
+                    }
                 }
                 return null;
             }
         };
+        task.setOnSucceeded((x) ->
+                gameScene.setOnKeyPressed((k) ->
+                        keyPressed(k.getCode())));
         gameText.textProperty().bind(task.messageProperty());
-        new Thread(task).start();
+        Thread textThread = new Thread(task);
+        textThread.start();
     }
+
+    public void getClickablesAsButtons(Pane pane, List<Clickable> clickables) {
+        for (Clickable clickable : clickables) {
+            Image clickableImage = clickable.getImage();
+            ImageView view = new ImageView(clickableImage);
+            view.setFitHeight(clickable.getHeight());
+            view.setFitWidth(clickable.getWidth());
+            view.setX(clickable.getTopLeft().x);
+            view.setY(clickable.getTopLeft().y);
+            buttonToAdd = new Button();
+            buttonToAdd.setBackground(Background.EMPTY);
+            buttonToAdd.setMinWidth(clickable.getWidth());
+            buttonToAdd.setMaxWidth(clickable.getWidth());
+            buttonToAdd.setMinHeight(clickable.getHeight());
+            buttonToAdd.setMaxHeight(clickable.getHeight());
+            buttonToAdd.setGraphic(view);
+            buttonToAdd.addEventHandler(EventType.ROOT, clickable.getClickEvent());
+            buttonToAdd.setLayoutX(clickable.getTopLeft().x);
+            buttonToAdd.setLayoutY(clickable.getTopLeft().y);
+            pane.getChildren().add(buttonToAdd);
+
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ Background image: https://www.reddit.com/r/PixelArt/comments/gg3oe8/a_nice_beach
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ import java.util.List;
 
 public class BeachRoom extends Room {
 
-    public BeachRoom() throws FileNotFoundException {
+    public BeachRoom(NoodlesGUI scene) throws FileNotFoundException {
+        super(scene);
     }
 
     @Override
@@ -67,7 +69,7 @@ public class BeachRoom extends Room {
         return roomText;
     }
 
-    public List<String> getYesText(){
+    public void onYPress(){
         List<String> yesText = new ArrayList<>();
 
         yesText.add("Noodles: Hey, Eudora! Take this shiny feather! I bet it will make a pretty hat!");
@@ -76,16 +78,15 @@ public class BeachRoom extends Room {
         yesText.add("Eudora the Mercat: It's perfect! It matches my tail! Thank you, Noodles!");
         yesText.add("Noodles: It will be a perfect hat! I'm glad it made you happy!");
         yesText.add("Eudora the Mercat: Cathulu is really going to like you! Tell her I said 'Hi!'");
-
-        return yesText;
+        scene.startDisplayTextThread(yesText);
     }
-    public List<String> getNoText(){
+    public void onNPress(){
         List<String> noText = new ArrayList<>();
 
         noText.add("Noodles: I hope you feel better soon!");
         noText.add("Noodles: Maybe I can come back tomorrow and we can build sandcastles!");
         noText.add("Eudora the Mercat: That would be a lot of fun! Bye, Noodles!");
 
-        return noText;
+        scene.startDisplayTextThread(noText);
     }
 }

@@ -8,14 +8,21 @@ Background image: https://www.reddit.com/r/PixelArt/comments/lzbq24/1930s_living
 
 package com.example.noodlesthecat.rooms.livingroom;
 
+import com.example.noodlesthecat.Clickable;
+import com.example.noodlesthecat.Coordinates;
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LivingRoom extends Room {
 
-    public LivingRoom() throws FileNotFoundException {
+    public LivingRoom(NoodlesGUI scene) throws FileNotFoundException {
+        super(scene);
     }
 
     @Override
@@ -31,10 +38,14 @@ public class LivingRoom extends Room {
 
     @Override
     protected void setClickables() {
-        this.clickables = new ArrayList<>() {
-
-        };
+        Clickable clickableToAdd = new Clickable();
+        clickableToAdd.setImage(new Image("/ItemFeather.png"));
+        clickableToAdd.setWidth(80);
+        clickableToAdd.setHeight(40);
+        clickableToAdd.setTopLeft(new Coordinates(550, 500));
+        clickables.add(clickableToAdd);
     }
+
 
     @Override
     public List<String> getEnterRoomText(){
@@ -63,10 +74,10 @@ public class LivingRoom extends Room {
         return roomText;
     }
 
-    public List<String> getYesText(){
-        return null;
+    public void onYPress(){
+
     }
-    public List<String> getNoText(){
-        return null;
+    public void onNPress(){
+
     }
 }

@@ -11,10 +11,4 @@ public class Mouse extends Clickable {
         this.image = new Image("MouseImage");
 
     }
-
-
-    @Override
-    public void actionPerformed() {
-
-    }
 }

@@ -8,6 +8,7 @@ Background image: https://dribbble.com/shots/9555150-Pixel-woods
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ import java.util.List;
 
 public class WoodsRoom extends Room{
 
-    public WoodsRoom() throws FileNotFoundException {
+    public WoodsRoom(NoodlesGUI scene) throws FileNotFoundException {
+        super(scene);
     }
 
     @Override
@@ -47,10 +49,8 @@ public class WoodsRoom extends Room{
         return roomText;
     }
 
-    public List<String> getYesText(){
-        return null;
-    }
-    public List<String> getNoText(){
+    public void onYPress(){}
+    public void onNPress(){
         List<String> noText = new ArrayList<>();
 
         noText.add("Noodles: I don't think I need a string. I don't even know how to make a net");
@@ -59,7 +59,6 @@ public class WoodsRoom extends Room{
         noText.add("Toby the Fox: Maybe she can help you catch a salmon!");
         noText.add("Noodles: That's a great idea, Toby! Thanks!");
         noText.add("Noodles: I'll see if I can convince Cathulu to help me. I hope I have everything I need..");
-
-        return noText;
+        scene.startDisplayTextThread(noText);
     }
 }

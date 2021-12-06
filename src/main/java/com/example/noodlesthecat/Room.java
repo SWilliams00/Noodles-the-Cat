@@ -8,9 +8,17 @@ References for setting background image: https://stackoverflow.com/questions/973
 
 package com.example.noodlesthecat;
 
+import javafx.event.EventType;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Room {
@@ -25,8 +33,13 @@ public abstract class Room {
     protected List<String> noText;
 
 
-    public Room() throws FileNotFoundException {
 
+    protected NoodlesGUI scene;
+
+
+    public Room(NoodlesGUI scene) throws FileNotFoundException {
+        this.scene = scene;
+        clickables = new ArrayList<>();
         setBackgroundImageLocation();
         setBackgroundImage();
         setClickables();
@@ -67,9 +80,8 @@ public abstract class Room {
     protected abstract void setCommands();
     protected abstract void setClickables();
     public abstract List<String> getEnterRoomText();
-    public abstract List<String> getYesText();
-    public abstract List<String> getNoText();
-
+    public abstract void onYPress();
+    public abstract void onNPress();
 
     private void setBackgroundImage() throws FileNotFoundException {
         Image image = new Image(backgroundImageLocation);

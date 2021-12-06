@@ -8,33 +8,38 @@ Background image: https://www.reddit.com/r/PixelArt/comments/kmx13i/pixel_art_of
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
+import com.example.noodlesthecat.NoodlesGUI;
 import com.example.noodlesthecat.Room;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CaveRoom extends Room{
-    public CaveRoom() throws FileNotFoundException {
-    //    super(left, right);
+public class CaveRoom extends Room {
+
+    public CaveRoom(NoodlesGUI scene) throws FileNotFoundException {
+        super(scene);
     }
 
     @Override
-    protected void setBackgroundImageLocation(){
+    protected void setBackgroundImageLocation() {
         this.backgroundImageLocation = "BGCave.png";
     }
 
     @Override
-    protected void setCommands(){
-        this.commands = new ArrayList<>(){};
+    protected void setCommands() {
+        this.commands = new ArrayList<>() {
+        };
     }
 
     @Override
-    protected void setClickables(){
-        this.clickables = new ArrayList<>(){};
+    protected void setClickables() {
+        this.clickables = new ArrayList<>() {
+        };
     }
 
     @Override
-    public List<String> getEnterRoomText(){
+    public List<String> getEnterRoomText() {
         List<String> roomText = new ArrayList<>();
 
         roomText.add("Cathulu the Mystical: Who goes there? Who dares to interrupt my commune with the Old Ones?");
@@ -60,10 +65,10 @@ public class CaveRoom extends Room{
         return roomText;
     }
 
-    public List<String> getYesText(){
-        return null;
+    public void onYPress() {
     }
-    public List<String> getNoText(){
-        return null;
+
+    public void onNPress() {
+
     }
 }
