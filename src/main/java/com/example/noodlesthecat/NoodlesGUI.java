@@ -111,7 +111,7 @@ public class NoodlesGUI extends Application {
         beach = new BeachRoom(this);
         cave = new CaveRoom(this);
 
-        livingRoom.setLeft(backyard);
+        livingRoom.setLeft(cave);
         livingRoom.setRight(kitchen);
         kitchen.setLeft(livingRoom);
         kitchen.setRight(backyard);

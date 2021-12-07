@@ -1,18 +1,22 @@
-//Radio button resource: https://www.geeksforgeeks.org/javafx-radiobutton-with-examples/
+/*Shelby Williams
+Advanced Java
+12-18-21
+Noodles the Cat Point-and-Click Adventure Game
+Cathulu Riddles MiniGame
+API for all imported libraries used as references. */
 
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.ArrayList;
@@ -21,173 +25,248 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MGCathuluQuiz {
 
-    private static int questionNumberTracker = 0;
-    private static int questionsRight = 0;
-    private static List<Question> questionsArray = new ArrayList<>();
+    private int questionNumberTracker = 0;
+    //private int questionsRight = 0;
+    private List<CathuluQuestionClass> questionsArrayList = new ArrayList<>();
+    private Stage popupWindow;
+    private VBox root, correctAnswer, incorrectAnswer, gameWon;
+    private static Scene gamePlayScene, afterCorrectGuessScene, afterIncorrectGuessScene, winningScene;
+    private Font titleFont = new Font("Harrington", 28);
+    private Background background = new Background(new BackgroundFill(Color.ROSYBROWN, CornerRadii.EMPTY, Insets.EMPTY));
+    private Label questionLabel;
+    private Button answerToSelect1, answerToSelect2, answerToSelect3;
+    private String buttonLabel1, buttonLabel2, buttonLabel3;
 
-    private static Scene scene;
-    private static Stage popupWindow;
-
-    private static Label questionLabel;
-    private static RadioButton selectAnswer1, selectAnswer2, selectAnswer3;
-    private static Button submit;
-    private static boolean isAnswerCorrect;
-
-    private static ToggleGroup group = new ToggleGroup();
-
-    public static EventHandler<MouseEvent> yesClicked = (m) -> {
-          generateGamePane();
+    public EventHandler<MouseEvent> answerButtonClicked = (m) -> {
+        Button button =  (Button) (m.getSource());
+        if (checkAnswer(button)){
+            generateCorrectAnswerScene();
+        }
+        else generateIncorrectAnswerScene();
     };
-    public static EventHandler<MouseEvent> noClicked = (m) -> {
+
+    public EventHandler<MouseEvent> goAgainButtonClicked = (m) -> {
+        if(questionNumberTracker == 5){
+            generateGameWonScene();
+        }
+        else {
+            runGameplay();
+            root.setVisible(true);
+            popupWindow.setScene(gamePlayScene);
+
+        }
+    };
+
+    public EventHandler<MouseEvent> noClicked = (m) -> {
         popupWindow.close();
     };
 
-    public static void display() {
+    public void display() {
 
         popupWindow = new Stage();
         popupWindow.initModality(Modality.APPLICATION_MODAL);
         popupWindow.setTitle("Riddles");
 
-        generateGamePane();
+        generateQuestionArray();
+        generateGameplayScene();
+        runGameplay();
 
-        popupWindow.setScene(scene);
         popupWindow.showAndWait();
     }
 
-    private static void generateGamePane(){
-        BorderPane root = new BorderPane();
-        Label title = new Label("Cathulu the All-Knowing Asks...");
-        title.setFont(new Font("Harrington", 28));
-        root.setTop(title);
+    //Builds scene for game display
+    private void generateGameplayScene(){
 
-        BorderPane centerPane = new BorderPane();
-        questionLabel = new Label("");
+        root = new VBox();
+        root.setBackground(background);
+    //    root.setVisible(true);
+        Label title = new Label("Cathulu the All-Knowing Asks...");
+        title.setFont(titleFont);
+        title.setMinHeight(60);
+        title.setTextAlignment(TextAlignment.CENTER);
+        root.getChildren().add(title);
+        root.setAlignment(Pos.TOP_CENTER);
+
+        VBox secondVBox = new VBox();
+        questionLabel = new Label();
         questionLabel.setFont(new Font("Georgia", 18));
-        centerPane.setTop(questionLabel);
-        questionLabel.setAlignment(Pos.CENTER);
-        setQuestion();
+        questionLabel.setWrapText(true);
+        questionLabel.setTextAlignment(TextAlignment.CENTER);
+        questionLabel.setMaxWidth(350);
+        questionLabel.setMinHeight(100);
+        secondVBox.getChildren().add(questionLabel);
+        secondVBox.setAlignment(Pos.TOP_CENTER);
 
         HBox answerSelect = new HBox();
-        selectAnswer1 = new RadioButton();
-        selectAnswer2 = new RadioButton();
-        selectAnswer3 = new RadioButton();
-        selectAnswer1.setToggleGroup(group);
-        selectAnswer2.setToggleGroup(group);
-        selectAnswer3.setToggleGroup(group);
+        answerSelect.setPadding(new Insets(15, 12, 15, 12));
+        answerSelect.setSpacing(10);
+        answerToSelect1 = new Button();
+        answerToSelect2 = new Button();
+        answerToSelect3 = new Button();
+        answerToSelect1.setOnMouseClicked(answerButtonClicked);
+        answerToSelect2.setOnMouseClicked(answerButtonClicked);
+        answerToSelect3.setOnMouseClicked(answerButtonClicked);
+        answerSelect.getChildren().add(answerToSelect1);
+        answerSelect.getChildren().add(answerToSelect2);
+        answerSelect.getChildren().add(answerToSelect3);
+        secondVBox.getChildren().add(answerSelect);
+        answerSelect.setAlignment(Pos.CENTER);
 
-        group.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
-        {
-            public void changed(ObservableValue<? extends Toggle> ob,
-                                Toggle o, Toggle n)
-            {
-                RadioButton rb = (RadioButton)group.getSelectedToggle();
-                if (rb != null) {
-                    checkAnswer(rb);
-                    generateSubmittedAnswerPane();
-                }
-            }
-        });
+        root.getChildren().add(secondVBox);
+        secondVBox.setAlignment(Pos.CENTER);
 
-        answerSelect.getChildren().add(selectAnswer1);
-        answerSelect.getChildren().add(selectAnswer2);
-        answerSelect.getChildren().add(selectAnswer3);
-        centerPane.setCenter(answerSelect);
-        setRadioButtonLabels();
-
-        root.setCenter(centerPane);
-
-        scene = new Scene(root,500, 500, Color.ALICEBLUE);
+        gamePlayScene = new Scene(root,500, 300, Color.ALICEBLUE);
+        popupWindow.setScene(gamePlayScene);
     }
 
-    private static boolean checkAnswer(RadioButton rb){
-        if (rb.getText() == questionsArray.get(questionNumberTracker).getAnswer()){
-            questionNumberTracker++;
-            return isAnswerCorrect = true;
+    //Builds scene to display after correct answer
+    private void generateCorrectAnswerScene(){
+
+        root.setVisible(false);
+        questionNumberTracker++;
+
+        correctAnswer = new VBox();
+        correctAnswer.setBackground(background);
+        Label correctLabel = new Label("You are wise in the mysteries of the universe");
+        correctLabel.setFont(titleFont);
+        correctLabel.setTextAlignment(TextAlignment.CENTER);
+        correctLabel.setWrapText(true);
+        correctLabel.setMinHeight(200);
+        correctLabel.setMaxWidth(350);
+        correctAnswer.getChildren().add(correctLabel);
+        correctAnswer.setAlignment(Pos.TOP_CENTER);
+
+        Button tryAgain = new Button("Go again");
+        tryAgain.setOnMouseClicked(goAgainButtonClicked);
+        correctAnswer.getChildren().add(tryAgain);
+        correctAnswer.setAlignment(Pos.CENTER);
+
+        afterCorrectGuessScene = new Scene(correctAnswer, 500, 300, Color.ALICEBLUE);
+        popupWindow.setScene(afterCorrectGuessScene);
+    }
+
+    //Builds scene to display after incorrect answer
+    private void generateIncorrectAnswerScene(){
+
+        root.setVisible(false);
+        questionNumberTracker++;
+
+        incorrectAnswer = new VBox();
+        incorrectAnswer.setBackground(background);
+        Label notCorrectLabel = new Label("The universe has much to teach you...");
+        notCorrectLabel.setFont(titleFont);
+        notCorrectLabel.setTextAlignment(TextAlignment.CENTER);
+        notCorrectLabel.setWrapText(true);
+        notCorrectLabel.setMinHeight(200);
+        notCorrectLabel.setMaxWidth(350);
+        incorrectAnswer.getChildren().add(notCorrectLabel);
+        incorrectAnswer.setAlignment(Pos.TOP_CENTER);
+
+        Button tryAgain = new Button("Go again");
+        tryAgain.setOnMouseClicked(goAgainButtonClicked);
+        incorrectAnswer.getChildren().add(tryAgain);
+        incorrectAnswer.setAlignment(Pos.CENTER);
+
+        afterIncorrectGuessScene = new Scene(incorrectAnswer, 500, 300, Color.ALICEBLUE);
+        popupWindow.setScene(afterIncorrectGuessScene);
+    }
+
+    //Builds scene to display after 5 questions have been answered
+    private void generateGameWonScene(){
+
+        root.setVisible(false);
+
+        gameWon = new VBox();
+        gameWon.setBackground(background);
+        Label congratulations = new Label("You have completed my test");
+        congratulations.setFont(titleFont);
+        congratulations.setTextAlignment(TextAlignment.CENTER);
+        congratulations.setWrapText(true);
+        congratulations.setMinHeight(200);
+        congratulations.setMaxWidth(350);
+        gameWon.getChildren().add(congratulations);
+        gameWon.setAlignment(Pos.TOP_CENTER);
+
+        Button finishGame = new Button("Finish");
+        finishGame.setOnMouseClicked(noClicked);
+        gameWon.getChildren().add(finishGame);
+        gameWon.setAlignment(Pos.CENTER);
+
+        winningScene = new Scene(gameWon, 500, 300, Color.ALICEBLUE);
+        popupWindow.setScene(winningScene);
+    }
+
+    //Resets text on labels after an answer is processed
+    private void runGameplay(){
+        questionLabel.setText(setQuestionLabel());
+        setButtonLabels();
+        answerToSelect1.setText(buttonLabel1);
+        answerToSelect2.setText(buttonLabel2);
+        answerToSelect3.setText(buttonLabel3);
+    }
+
+    //Checks text on selected answerButton with correct answer in Question array
+    private Boolean checkAnswer(Button button){
+        if (button.getText().equals(questionsArrayList.get(questionNumberTracker).getAnswer())){
+            return true;
         }
-        else return isAnswerCorrect = false;
+        else return false;
     }
 
-    public static String outputAnswerResult(){
-        String answerIs;
-        if(isAnswerCorrect){
-            return answerIs = "correct.";
-        }
-        else return answerIs = "incorrect.";
+    //Updates questionLabel text when called with each round
+    public String setQuestionLabel(){
+        return questionsArrayList.get(questionNumberTracker).getQuestion();
     }
 
-    private static void generateSubmittedAnswerPane(){
-        BorderPane answerPane = new BorderPane();
-        Label answerPaneTitle = new Label("That answer is " + outputAnswerResult());
-        answerPane.setTop(answerPaneTitle);
-
-        BorderPane centerPane = new BorderPane();
-        Label resetQuestion = new Label("Do you want to try another?");
-        centerPane.setTop(resetQuestion);
-
-        HBox centerButtonsBox = new HBox();
-        Button yesButton = new Button("Yes");
-        yesButton.setOnMouseClicked(yesClicked);
-        Button noButton = new Button("No");
-        noButton.setOnMouseClicked(noClicked);
-        centerButtonsBox.getChildren().add(yesButton);
-        centerButtonsBox.getChildren().add(noButton);
-        centerPane.setCenter(centerButtonsBox);
-
-        answerPane.setCenter(centerPane);
-
-    }
-
-    public static void setQuestion(){
-        questionLabel.setText(questionsArray.get(questionNumberTracker).getQuestion());
-    }
-
-    public static void setRadioButtonLabels(){
+    //Updates button label text when called with each round
+    public void setButtonLabels(){
         int correctAnswerSpot = pickRandomButton();
+
         if (correctAnswerSpot == 1){
-            selectAnswer1.setText(questionsArray.get(questionNumberTracker).getAnswer());
-            selectAnswer2.setText(questionsArray.get(questionNumberTracker).getAlternateAnswer1());
-            selectAnswer3.setText(questionsArray.get(questionNumberTracker).getAlternateAnswer2());
+            buttonLabel1 = questionsArrayList.get(questionNumberTracker).getAnswer();
+            buttonLabel2 = questionsArrayList.get(questionNumberTracker).getAlternateAnswer1();
+            buttonLabel3 = questionsArrayList.get(questionNumberTracker).getAlternateAnswer2();
         }
         if (correctAnswerSpot == 2){
-            selectAnswer2.setText(questionsArray.get(questionNumberTracker).getAnswer());
-            selectAnswer1.setText(questionsArray.get(questionNumberTracker).getAlternateAnswer1());
-            selectAnswer3.setText(questionsArray.get(questionNumberTracker).getAlternateAnswer2());
+            buttonLabel2 = questionsArrayList.get(questionNumberTracker).getAnswer();
+            buttonLabel3 = questionsArrayList.get(questionNumberTracker).getAlternateAnswer1();
+            buttonLabel1 = questionsArrayList.get(questionNumberTracker).getAlternateAnswer2();
         }
         if (correctAnswerSpot == 3){
-            selectAnswer3.setText(questionsArray.get(questionNumberTracker).getAnswer());
-            selectAnswer1.setText(questionsArray.get(questionNumberTracker).getAlternateAnswer1());
-            selectAnswer2.setText(questionsArray.get(questionNumberTracker).getAlternateAnswer2());
+            buttonLabel3 = questionsArrayList.get(questionNumberTracker).getAnswer();
+            buttonLabel1 = questionsArrayList.get(questionNumberTracker).getAlternateAnswer1();
+            buttonLabel2 = questionsArrayList.get(questionNumberTracker).getAlternateAnswer2();
         }
     }
 
-    public static int pickRandomButton(){
+    //Returns an int that is used to randomize the correct answer location in game
+    public int pickRandomButton(){
         int min = 1;
         int max = 3;
-        int buttonToPlace = ThreadLocalRandom.current().nextInt(min, max + 1);
-        return buttonToPlace;
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    public static void generateQuestionArray(){
-        Question question1 = new Question("I'm the rare case when today comes before yesterday. What am I?",
+    public void generateQuestionArray(){
+        CathuluQuestionClass cathuluQuestionClass1 = new CathuluQuestionClass("I'm the rare case when today comes before yesterday. What am I?",
                 "A dictionary", "Naptime", "Sunset");
 
-        Question question2 = new Question("What goes all the way around the world, but stays in a corner?",
+        CathuluQuestionClass cathuluQuestionClass2 = new CathuluQuestionClass("What goes all the way around the world, but stays in a corner?",
                 "A stamp", "A houseplant", "An airplane");
 
-        Question question3 = new Question("You cannot keep me until you have given me. What am I?",
+        CathuluQuestionClass cathuluQuestionClass3 = new CathuluQuestionClass("You cannot keep me until you have given me. What am I?",
                 "Your word", "A present", "A high-five");
 
-        Question question4 = new Question("This is easy to lift but hard to throw. What is it?",
+        CathuluQuestionClass cathuluQuestionClass4 = new CathuluQuestionClass("This is easy to lift but hard to throw. What is it?",
                 "A feather", "A rock", "Hank the Black Cat");
 
-        Question question5 = new Question("What always ends everything?",
+        CathuluQuestionClass cathuluQuestionClass5 = new CathuluQuestionClass("What always ends everything?",
                 "The letter G", "Entropy", "Bedtime");
 
-        questionsArray.add(question1);
-        questionsArray.add(question2);
-        questionsArray.add(question3);
-        questionsArray.add(question4);
-        questionsArray.add(question5);
+        questionsArrayList.add(cathuluQuestionClass1);
+        questionsArrayList.add(cathuluQuestionClass2);
+        questionsArrayList.add(cathuluQuestionClass3);
+        questionsArrayList.add(cathuluQuestionClass4);
+        questionsArrayList.add(cathuluQuestionClass5);
     }
 
 }

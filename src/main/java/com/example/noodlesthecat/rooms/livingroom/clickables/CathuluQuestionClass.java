@@ -1,11 +1,14 @@
 package com.example.noodlesthecat.rooms.livingroom.clickables;
 
-public class Question {
+public class CathuluQuestionClass {
 
     private String question, answer, alternateAnswer1, alternateAnswer2;
 
-    public Question (String question, String answer, String alternateAnswer1, String alternateAnswer2){
-
+    public CathuluQuestionClass(String question, String answer, String alternateAnswer1, String alternateAnswer2) {
+        this.question = question;
+        this.answer = answer;
+        this.alternateAnswer1 = alternateAnswer1;
+        this.alternateAnswer2 = alternateAnswer2;
     }
 
     public String getQuestion() {
