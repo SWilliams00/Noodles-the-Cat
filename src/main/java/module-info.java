@@ -3,6 +3,9 @@ module com.example.noodlesthecat {
     requires javafx.fxml;
 
 
-    opens com.example.noodlesthecat to javafx.fxml;
-    exports com.example.noodlesthecat;
+    opens com.swgame.noodlesthecat to javafx.fxml;
+    exports com.swgame.noodlesthecat.NoodlesGUI;
+    opens com.swgame.noodlesthecat.NoodlesGUI to javafx.fxml;
+    exports com.swgame.noodlesthecat.rooms;
+    opens com.swgame.noodlesthecat.rooms to javafx.fxml;
 }
