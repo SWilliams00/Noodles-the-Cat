@@ -29,7 +29,7 @@ public class CaveRoom extends Room {
 
     @Override
     protected void setClickables() {
-        this.clickables = new ArrayList<>() {
+        this.clickables = new ArrayList<com.swgame.noodlesthecat.NoodlesGUI.Clickable>() {
         };
     }
 

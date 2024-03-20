@@ -152,7 +152,7 @@ public class NoodlesGUI extends Application {
     /*Creates side panels for root border pane, adds left/right arrow buttons with assigned click events.
         Clicking the arrows navigates to the next room based on current room's left/right assignments.*/
     private void addButtons() {
-        Image leftButton = new Image("/leftArrow.png");
+        Image leftButton = new Image("/LeftArrow.png");
         ImageView view = new ImageView(leftButton);
         StackPane leftSide = new StackPane();
         leftSide.setPrefWidth(100);
@@ -164,7 +164,7 @@ public class NoodlesGUI extends Application {
         root.setLeft(leftSide);
         leftArrow.addEventHandler(MouseEvent.MOUSE_CLICKED, (x) -> changeRoom(currentRoom.getLeft()));
 
-        Image rightButton = new Image("/rightArrow.png");
+        Image rightButton = new Image("/RightArrow.png");
         view = new ImageView(rightButton);
         StackPane rightSide = new StackPane();
         rightSide.setPrefWidth(100);
