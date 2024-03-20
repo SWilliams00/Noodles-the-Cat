@@ -1,4 +1,4 @@
-module com.example.noodlesthecat {
+module com.swgame.noodlesthecat {
     requires javafx.controls;
     requires javafx.fxml;
 
